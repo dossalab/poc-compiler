@@ -169,6 +169,22 @@ token_type_t lexer_pop(lexer_t *lexer, token_meta_t *meta)
                 }
 
                 return TOKEN_PIPE;
+
+            case '+':
+                if (reader_peek(reader) == '=') {
+                    reader_pop(reader);
+                    return TOKEN_PLUS_EQUAL;
+                }
+
+                return TOKEN_PLUS;
+
+            case '-':
+                if (reader_peek(reader) == '=') {
+                    reader_pop(reader);
+                    return TOKEN_MINUS_EQUAL;
+                }
+
+                return TOKEN_MINUS;
         }
 
         /* complex */

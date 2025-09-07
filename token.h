@@ -22,6 +22,10 @@ typedef enum {
     TOKEN_DOUBLE_PIPE,
     TOKEN_QUOTATION,
     TOKEN_COMPLEX,
+    TOKEN_PLUS,
+    TOKEN_PLUS_EQUAL,
+    TOKEN_MINUS,
+    TOKEN_MINUS_EQUAL,
 
     /* keywords */
     TOKEN_IF,

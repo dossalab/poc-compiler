@@ -62,6 +62,14 @@ const char *decode_token_type(token_type_t type)
         return "VOID";
     case TOKEN_RETURN:
         return "RETURN";
+    case TOKEN_PLUS:
+        return "+";
+    case TOKEN_PLUS_EQUAL:
+        return "+=";
+    case TOKEN_MINUS:
+        return "-";
+    case TOKEN_MINUS_EQUAL:
+        return "-=";
     }
 
     printf("fixme - %d\n", type);

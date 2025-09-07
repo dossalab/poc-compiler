@@ -35,12 +35,12 @@ const char *program = \
     "\n"
     "void main()\n"
     "{\n"
-    "    int a = 10;\n"
+    "    int a = function1() == 0;\n"
     "    int b = 12;\n"
     "\n"
-    "    if (function1()) {\n"
+    "    if (function1() == 0) {\n"
     "        stuff = 10;\n"
-    "        stuff = 12;\n"
+    "        stuff -= 1;\n"
     "        int a = 10;\n"
     "    }\n"
     "\n"
@@ -91,6 +91,7 @@ static bool is_token_of_type(parser_t *p, token_type_t expected)
 
 static bool is_function_call(parser_t *p);
 static bool is_code_block(parser_t *p);
+static bool is_rvalue(parser_t *p);
 
 static bool is_semicolon(parser_t *p)
 {
@@ -107,44 +108,37 @@ static bool is_lvalue(parser_t *p)
     return is_identifier(p);
 }
 
+static bool is_relational(parser_t *p)
+{
+    parser_save_state(p);
+
+    bool ok = is_rvalue(p) &&
+           (is_token_of_type(p, TOKEN_GREATER) ||
+            is_token_of_type(p, TOKEN_LESS) ||
+            is_token_of_type(p, TOKEN_DOUBLE_EQUAL) ||
+            is_token_of_type(p, TOKEN_GREATER_EQUAL) ||
+            is_token_of_type(p, TOKEN_LESS_EQUAL))
+        && is_rvalue(p);
+
+    if (!ok) {
+        parser_restore_state(p);
+    }
+
+    return ok;
+}
+
 static bool is_rvalue(parser_t *p)
 {
-    return is_function_call(p) || is_identifier(p);
-}
-
-static bool is_assignment_operator(parser_t *p)
-{
-    switch (lexer_peek(p->lexer, NULL)) {
-    case TOKEN_EQUAL:
-        lexer_pop(p->lexer, NULL);
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-static bool is_relation_operator(parser_t *p)
-{
-    switch (lexer_peek(p->lexer, NULL)) {
-    case TOKEN_DOUBLE_EQUAL:
-    case TOKEN_LESS:
-    case TOKEN_LESS_EQUAL:
-    case TOKEN_GREATER:
-    case TOKEN_GREATER_EQUAL:
-        lexer_pop(p->lexer, NULL);
-        return true;
-
-    default:
-        return false;
-    }
+    return is_relational(p) || is_function_call(p) || is_identifier(p);
 }
 
 static bool is_assignment(parser_t *p)
 {
     parser_save_state(p);
 
-    bool ok = is_lvalue(p) && is_assignment_operator(p) && is_rvalue(p);
+    bool ok = is_lvalue(p) &&
+              (is_token_of_type(p, TOKEN_EQUAL) || is_token_of_type(p, TOKEN_MINUS_EQUAL) || is_token_of_type(p, TOKEN_PLUS_EQUAL))
+              && is_rvalue(p);
 
     if (!ok) {
         parser_restore_state(p);
@@ -187,7 +181,7 @@ static bool is_variable_declaration(parser_t *p)
 {
     parser_save_state(p);
 
-    bool ok = is_type_spec(p) && is_identifier(p) && is_token_of_type(p, TOKEN_EQUAL) && is_identifier(p);
+    bool ok = is_type_spec(p) && is_identifier(p) && is_token_of_type(p, TOKEN_EQUAL) && is_rvalue(p);
 
     if (!ok) {
         parser_restore_state(p);
