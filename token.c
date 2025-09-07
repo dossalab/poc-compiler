@@ -58,6 +58,8 @@ const char *decode_token_type(token_type_t type)
         return "DO";
     case TOKEN_INT:
         return "INT";
+    case TOKEN_VOID:
+        return "VOID";
     case TOKEN_RETURN:
         return "RETURN";
     }

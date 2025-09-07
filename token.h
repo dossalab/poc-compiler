@@ -29,6 +29,7 @@ typedef enum {
     TOKEN_WHILE,
     TOKEN_DO,
     TOKEN_INT,
+    TOKEN_VOID,
     TOKEN_RETURN,
 
     TOKEN_END

@@ -56,6 +56,8 @@ static inline token_type_t check_for_keyword_token(const char *token, unsigned l
     case 4:
         if (strncmp(token, "else", 4) == 0) {
             return TOKEN_ELSE;
+        } else if (strncmp(token, "void", 4) == 0) {
+            return TOKEN_VOID;
         }
 
         break;
