@@ -1,4 +1,5 @@
 #include "token.h"
+#include <stdio.h>
 
 const char *decode_token_type(token_type_t type)
 {
@@ -60,4 +61,7 @@ const char *decode_token_type(token_type_t type)
     case TOKEN_RETURN:
         return "RETURN";
     }
+
+    printf("fixme - %d\n", type);
+    return NULL;
 }

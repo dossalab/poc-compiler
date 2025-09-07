@@ -9,6 +9,7 @@ static inline bool is_whitespace(char ch) {
     switch (ch) {
         case ' ':
         case '\t':
+        case '\n':
             return true;
     }
 
@@ -19,6 +20,7 @@ static inline bool is_alpha(char ch) {
     switch (ch) {
     case 'a' ... 'z':
     case 'A' ... 'Z':
+    case '_':
         return true;
     }
 
@@ -82,6 +84,18 @@ token_type_t lexer_pop(lexer_t *lexer, token_meta_t *meta)
     token_type_t type;
     bool parsing_complex = false;
     reader_t *reader = lexer->reader;
+    token_meta_t meta_dummy;
+
+    if (!meta) {
+        meta = &meta_dummy;
+    }
+
+    if (lexer->peek_buffer.populated) {
+        lexer->peek_buffer.populated = false;
+
+        *meta = lexer->peek_buffer.meta;
+        return lexer->peek_buffer.type;
+    }
 
     while ((ch = reader_pop(reader)) != '\0') {
         if (is_whitespace(ch)) {
@@ -180,7 +194,22 @@ token_type_t lexer_pop(lexer_t *lexer, token_meta_t *meta)
     return TOKEN_END;
 }
 
+token_type_t lexer_peek(lexer_t *lexer, token_meta_t *meta)
+{
+    if (!lexer->peek_buffer.populated) {
+        lexer->peek_buffer.type = lexer_pop(lexer, &lexer->peek_buffer.meta);
+        lexer->peek_buffer.populated = true;
+    }
+
+    if (meta) {
+        *meta = lexer->peek_buffer.meta;
+    }
+
+    return lexer->peek_buffer.type;
+}
+
 void lexer_init(lexer_t *lexer, reader_t *reader)
 {
     lexer->reader = reader;
+    lexer->peek_buffer.populated = false;
 }

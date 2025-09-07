@@ -1,5 +1,7 @@
+CFLAGS := -g
+
 compiler: reader.o token.o lexer.o main.o
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
 	rm -f reader.o token.o lexer.o main.o compiler
